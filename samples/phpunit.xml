@@ -1,0 +1,26 @@
+<phpunit>
+  <listeners>
+    <listener class="SpiraListener_Listener" file="../SpiraListener/Listener.php">
+          <arguments>
+              <!-- URL -->
+              <string>http://localhost/SpiraTeam</string>
+              <!-- User Name -->
+              <string>fredbloggs</string>
+              <!-- User Password -->
+              <string>fredbloggs</string>
+              <!-- Project ID -->
+              <integer>1</integer>
+              <!-- Release ID -->
+              <integer>1</integer>
+              <!-- Test Set ID -->
+              <integer>1</integer>
+            </arguments>
+    </listener>
+  </listeners>
+  <testsuites>
+    <testsuite name="Sample Suite">
+      <directory>.</directory>
+      <file>./SampleSuite.php</file>
+    </testsuite>
+  </testsuites>
+</phpunit>
