@@ -1,0 +1,14 @@
+{
+  "name": "hurma-project/spira-test",
+  "description": "Composer package for SpiraTest",
+  "require": {
+    "php": ">=8.0",
+    "ext-soap": "*",
+    "phpunit/phpunit": "9.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "SpiraTest\\": "src"
+    }
+  }
+}
