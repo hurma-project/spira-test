@@ -1,6 +1,7 @@
 {
   "name": "hurma-project/spira-test",
   "description": "Composer package for SpiraTest",
+  "license": "MIT",
   "require": {
     "php": ">=8.0",
     "ext-soap": "*",
