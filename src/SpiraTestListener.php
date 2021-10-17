@@ -19,40 +19,38 @@ use Throwable;
  */
 class SpiraTestListener implements TestListener
 {
-  //General constants
+  // General constants
   public const DEFAULT_TEST_RUNNER_NAME = "PHPUnit";
 
-  //Internal variables
+  // Internal variables
   protected int $startTime;
 
-  //SpiraTest execution status constants
-  public const EXECUTION_STATUS_ID_PASSED = 2;
+  // SpiraTest execution status constants
   public const EXECUTION_STATUS_ID_FAILED = 1;
+  public const EXECUTION_STATUS_ID_PASSED = 2;
   public const EXECUTION_STATUS_ID_NOT_RUN = 3;
-  public const EXECUTION_STATUS_ID_CAUTION = 6;
   public const EXECUTION_STATUS_ID_BLOCKED = 5;
+  public const EXECUTION_STATUS_ID_CAUTION = 6;
 
-  /* Constructor */
-
-  public function __construct(string $spiraUrl, string $spiraUser, string $spiraPass, $projectId, $releaseId = -1, $testSetId = -1)
-  {
-    $this->setBaseUrl($spiraUrl);
-    $this->setUserName($spiraUser);
-    $this->setPassword($spiraPass);
-    $this->setProjectId($projectId);
-    $this->setReleaseId($releaseId);
-    $this->setTestSetId($testSetId);
+  public function __construct(
+      ?string $baseUrl = null, ?string $userName = null, ?string $password = null,
+      ?int $projectId = null, ?int $releaseId = null, ?int $testSetId = null
+  ) {
+    $this->setBaseUrl($baseUrl ?: $_ENV['SPIRA_URL']);
+    $this->setUserName($userName ?: $_ENV['SPIRA_USER']);
+    $this->setPassword($password ?: $_ENV['SPIRA_PASSWORD']);
+    $this->setProjectId($projectId ?: $_ENV['SPIRA_PROJECT_ID'] ?: -1);
+    $this->setReleaseId($releaseId ?: $_ENV['SPIRA_RELEASE_ID'] ?: -1);
+    $this->setTestSetId($testSetId ?: $_ENV['SPIRA_TEST_SET_ID'] ?: -1);
   }
 
-  /* Class properties */
-
-  /*
-    The name of the test runner to report back to SpiraTest.
-    If you are running a Selenium-RC web test, you might want to
-    set it to Selenium to distinguish from a true PHPUnit test
-  */
   protected string $testRunnerName = self::DEFAULT_TEST_RUNNER_NAME;
 
+  /**
+   * The name of the test runner to report back to SpiraTest.
+   * If you are running a Selenium-RC web test, you might want to
+   * set it to Selenium to distinguish from a true PHPUnit test
+   */
   public function getTestRunnerName(): string
   {
     return $this->testRunnerName;
@@ -63,11 +61,11 @@ class SpiraTestListener implements TestListener
     $this->testRunnerName = $value;
   }
 
-  /*
-    The base url of the Spira web service
-  */
-  protected string $baseUrl;
+  protected ?string $baseUrl;
 
+  /**
+   * The base url of the Spira web service
+   */
   public function getBaseUrl(): string
   {
     return $this->baseUrl;
@@ -78,11 +76,11 @@ class SpiraTestListener implements TestListener
     $this->baseUrl = $value;
   }
 
-  /*
-    The user name of the Spira account accessing the web service
-  */
-  protected string $userName;
+  protected ?string $userName;
 
+  /**
+   * The user name of the Spira account accessing the web service
+   */
   public function getUserName(): string
   {
     return $this->userName;
@@ -93,11 +91,11 @@ class SpiraTestListener implements TestListener
     $this->userName = $value;
   }
 
-  /*
-    The password of the Spira account accessing the web service
-  */
-  protected string $password;
+  protected ?string $password;
 
+  /**
+   * The password of the Spira account accessing the web service
+   */
   public function getPassword(): string
   {
     return $this->password;
@@ -108,11 +106,11 @@ class SpiraTestListener implements TestListener
     $this->password = $value;
   }
 
-  /*
-    The ID of the project we're returning results against
-  */
-  protected int $projectId;
+  protected ?int $projectId;
 
+  /**
+   * The ID of the project we're returning results against
+   */
   public function getProjectId(): int
   {
     return $this->projectId;
@@ -123,11 +121,11 @@ class SpiraTestListener implements TestListener
     $this->projectId = $value;
   }
 
-  /*
-  The ID of the release we're returning results against (optional)
-*/
-  protected int $releaseId = -1;
+  protected ?int $releaseId;
 
+  /**
+   * The ID of the release we're returning results against (optional)
+   */
   public function getReleaseId(): int
   {
     return $this->releaseId;
@@ -138,11 +136,11 @@ class SpiraTestListener implements TestListener
     $this->releaseId = $value;
   }
 
-  /*
-  The ID of the test set we're returning results against (optional)
-*/
-  protected int $testSetId = -1;
+  protected ?int $testSetId;
 
+  /**
+   * The ID of the test set we're returning results against (optional)
+   */
   public function getTestSetId(): int
   {
     return $this->testSetId;
@@ -153,30 +151,15 @@ class SpiraTestListener implements TestListener
     $this->testSetId = $value;
   }
 
-  /**
-   * An error occurred.
-   *
-   * @param Test $test
-   * @param \Throwable $e
-   * @param float $time
-   */
   public function addError(Test $test, \Throwable $e, float $time): void
   {
     //Not implemented, we just use endTest and check the status
   }
 
-  /**
-   * A failure occurred.
-   *
-   * @param Test $test
-   * @param AssertionFailedError $e
-   * @param float $time
-   */
   public function addFailure(Test $test, AssertionFailedError $e, float $time): void
   {
     //Not implemented, we just use endTest and check the status
   }
-
 
   public function addWarning(Test $test, Warning $e, float $time): void
   {
@@ -188,115 +171,77 @@ class SpiraTestListener implements TestListener
     //Not implemented, we just use endTest and check the status
   }
 
-  /**
-   * Incomplete test.
-   *
-   * @param Test $test
-   * @param \Throwable $e
-   * @param float $time
-   */
   public function addIncompleteTest(Test $test, \Throwable $e, float $time): void
   {
     //Not implemented, we just use endTest and check the status
   }
 
-  /**
-   * Skipped test.
-   *
-   * @param Test $test
-   * @param \Throwable $e
-   * @param float $time
-   * @since  Method available since Release 3.0.0
-   */
   public function addSkippedTest(Test $test, \Throwable $e, float $time): void
   {
     //Not implemented, we just use endTest and check the status
   }
 
-  /**
-   * A test suite started.
-   *
-   * @param TestSuite $suite
-   * @since  Method available since Release 2.2.0
-   */
   public function startTestSuite(TestSuite $suite): void
   {
-    //Do nothing
+    //Not implemented, we just use endTest and check the status
   }
 
-  /**
-   * A test suite ended.
-   *
-   * @param TestSuite $suite
-   * @since  Method available since Release 2.2.0
-   */
   public function endTestSuite(TestSuite $suite): void
   {
-    //Let the user know that we've finished the whole suite
-    printf("\nTest Suite '%s' sent to SpiraTest\n", $suite->getName());
+    //Not implemented, we just use endTest and check the status
   }
 
-  /**
-   * A test started.
-   *
-   * @param Test $test
-   */
   public function startTest(Test $test): void
   {
     //Record the time it started
     $this->startTime = time();
   }
 
-  /**
-   * A test ended.
-   *
-   * @param Test $test
-   * @param float $time
-   */
   public function endTest(Test $test, float $time): void
   {
+    if (!$this->baseUrl && !$this->userName && !$this->password) {
+      return;
+    }
+
     //Get the full test name (includes the spira id appended)
     $testNameAndId = $test->getName();
     $testComponents = preg_split("__", $testNameAndId);
-    if (count($testComponents) >= 2) {
-      //extract the test case id from the name (separated by two underscores)
-      $testName = $testComponents[0];
-      $testCaseId = (integer)$testComponents[1];
-
-      //Now convert the execution status into the values expected by SpiraTest
-      $executionStatusId = self::EXECUTION_STATUS_ID_NOT_RUN;
-      $assertCount = $test->getNumAssertions();
-      $message = $test->getStatusMessage();
-      $stackTrace = $test->getStatusMessage();
-      $startDate = $this->startTime;
-      $endDate = $this->startTime + $time;
-
-      //If the test was in the warning situation, report as Blocked
-      if ($test instanceof Warning) {
-        $executionStatusId = self::EXECUTION_STATUS_ID_BLOCKED;
-      } else {
-        if ($test->getStatus() === BaseTestRunner::STATUS_SKIPPED) {
-          $executionStatusId = self::EXECUTION_STATUS_ID_BLOCKED;
-        }
-        if ($test->getStatus() === BaseTestRunner::STATUS_INCOMPLETE) {
-          $executionStatusId = self::EXECUTION_STATUS_ID_CAUTION;
-        }
-        if ($test->getStatus() === BaseTestRunner::STATUS_PASSED) {
-          $executionStatusId = self::EXECUTION_STATUS_ID_PASSED;
-        }
-        if ($test->getStatus() === BaseTestRunner::STATUS_FAILURE || $test->getStatus() === BaseTestRunner::STATUS_ERROR) {
-          $executionStatusId = self::EXECUTION_STATUS_ID_FAILED;
-        }
-      }
-
-      //Send the results to SpiraTest
-      $testRunId = $this->getImportExport()->recordAutomated(
-          $testCaseId, $this->releaseId, $this->testSetId, $startDate, $endDate, $executionStatusId,
-          $this->testRunnerName, $testName, $assertCount, $message, $stackTrace);
-
-      //Display the message letting the user know that the results were sent
-      printf("\nTest Case '%s' (TC000%d) sent to SpiraTest with status %d - Test Run (TR000%d).\n", $testName, $testCaseId, $executionStatusId, $testRunId);
+    if (count($testComponents) < 2) {
+      return;
     }
+
+    //extract the test case id from the name (separated by two underscores)
+    $testName = $testComponents[0];
+    $testCaseId = (integer)$testComponents[1];
+
+    //Now convert the execution status into the values expected by SpiraTest
+    $assertCount = $test->getNumAssertions();
+    $message = $test->getStatusMessage();
+    $stackTrace = $test->getStatusMessage();
+    $startDate = $this->startTime;
+    $endDate = $this->startTime + $time;
+
+    //If the test was in the warning situation, report as Blocked
+    if ($test instanceof Warning) {
+      $executionStatusId = self::EXECUTION_STATUS_ID_BLOCKED;
+    } else {
+      $executionStatusId = match ($test->getStatus()) {
+         BaseTestRunner::STATUS_SKIPPED => self::EXECUTION_STATUS_ID_BLOCKED,
+         BaseTestRunner::STATUS_INCOMPLETE => self::EXECUTION_STATUS_ID_CAUTION,
+         BaseTestRunner::STATUS_PASSED => self::EXECUTION_STATUS_ID_PASSED,
+         BaseTestRunner::STATUS_FAILURE => self::EXECUTION_STATUS_ID_FAILED,
+         BaseTestRunner::STATUS_ERROR => self::EXECUTION_STATUS_ID_FAILED,
+         default => self::EXECUTION_STATUS_ID_NOT_RUN,
+      };
+    }
+
+    //Send the results to SpiraTest
+    $testRunId = $this->getImportExport()->recordAutomated(
+        $testCaseId, $this->releaseId, $this->testSetId, $startDate, $endDate, $executionStatusId,
+        $this->testRunnerName, $testName, $assertCount, $message, $stackTrace);
+
+    //Display the message letting the user know that the results were sent
+    printf("\nTest Case '%s' (TC:%d) sent to SpiraTest with status %d - Test Run (TR:%d).\n", $testName, $testCaseId, $executionStatusId, $testRunId);
   }
 
   public function getImportExport(): ImportExport
