@@ -39,7 +39,7 @@ class SpiraTestListener implements TestListener
     $this->setBaseUrl($baseUrl ?: $_ENV['SPIRA_URL']);
     $this->setUserName($userName ?: $_ENV['SPIRA_USER']);
     $this->setPassword($password ?: $_ENV['SPIRA_PASSWORD']);
-    $this->setProjectId($projectId ?: $_ENV['SPIRA_PROJECT_ID'] ?: -1);
+    $this->setProjectId($projectId ?: $_ENV['SPIRA_PROJECT_ID']);
     $this->setReleaseId($releaseId ?: $_ENV['SPIRA_RELEASE_ID'] ?: -1);
     $this->setTestSetId($testSetId ?: $_ENV['SPIRA_TEST_SET_ID'] ?: -1);
   }
@@ -199,7 +199,7 @@ class SpiraTestListener implements TestListener
 
   public function endTest(Test $test, float $time): void
   {
-    if (!$this->baseUrl && !$this->userName && !$this->password) {
+    if (!$this->baseUrl && !$this->userName && !$this->password && !$this->projectId) {
       return;
     }
 
