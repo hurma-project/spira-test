@@ -40,8 +40,8 @@ class SpiraTestListener implements TestListener
     $this->setUserName($userName ?: $_ENV['SPIRA_USER']);
     $this->setPassword($password ?: $_ENV['SPIRA_PASSWORD']);
     $this->setProjectId($projectId ?: $_ENV['SPIRA_PROJECT_ID']);
-    $this->setReleaseId($releaseId ?: $_ENV['SPIRA_RELEASE_ID'] ?: -1);
-    $this->setTestSetId($testSetId ?: $_ENV['SPIRA_TEST_SET_ID'] ?: -1);
+    $this->setReleaseId($releaseId ?: $_ENV['SPIRA_RELEASE_ID'] ?? -1);
+    $this->setTestSetId($testSetId ?: $_ENV['SPIRA_TEST_SET_ID'] ?? -1);
   }
 
   protected string $testRunnerName = self::DEFAULT_TEST_RUNNER_NAME;
@@ -205,14 +205,19 @@ class SpiraTestListener implements TestListener
 
     //Get the full test name (includes the spira id appended)
     $testNameAndId = $test->getName();
-    $testComponents = preg_split("__", $testNameAndId);
+    $testComponents = explode('__', $testNameAndId);
     if (count($testComponents) < 2) {
       return;
     }
 
     //extract the test case id from the name (separated by two underscores)
     $testName = $testComponents[0];
-    $testCaseId = (integer)$testComponents[1];
+    $testCaseId = str_starts_with(strtolower($testComponents[1]), 'tc')
+        ? (integer)substr($testComponents[1], 2)
+        : -1;
+    if ($testCaseId <= 0) {
+      return;
+    }
 
     //Now convert the execution status into the values expected by SpiraTest
     $assertCount = $test->getNumAssertions();
@@ -226,12 +231,12 @@ class SpiraTestListener implements TestListener
       $executionStatusId = self::EXECUTION_STATUS_ID_BLOCKED;
     } else {
       $executionStatusId = match ($test->getStatus()) {
-         BaseTestRunner::STATUS_SKIPPED => self::EXECUTION_STATUS_ID_BLOCKED,
-         BaseTestRunner::STATUS_INCOMPLETE => self::EXECUTION_STATUS_ID_CAUTION,
-         BaseTestRunner::STATUS_PASSED => self::EXECUTION_STATUS_ID_PASSED,
-         BaseTestRunner::STATUS_FAILURE => self::EXECUTION_STATUS_ID_FAILED,
-         BaseTestRunner::STATUS_ERROR => self::EXECUTION_STATUS_ID_FAILED,
-         default => self::EXECUTION_STATUS_ID_NOT_RUN,
+        BaseTestRunner::STATUS_SKIPPED => self::EXECUTION_STATUS_ID_BLOCKED,
+        BaseTestRunner::STATUS_INCOMPLETE => self::EXECUTION_STATUS_ID_CAUTION,
+        BaseTestRunner::STATUS_PASSED => self::EXECUTION_STATUS_ID_PASSED,
+        BaseTestRunner::STATUS_FAILURE => self::EXECUTION_STATUS_ID_FAILED,
+        BaseTestRunner::STATUS_ERROR => self::EXECUTION_STATUS_ID_FAILED,
+        default => self::EXECUTION_STATUS_ID_NOT_RUN,
       };
     }
 
@@ -257,5 +262,3 @@ class SpiraTestListener implements TestListener
     return $importExport;
   }
 }
-
-?>
